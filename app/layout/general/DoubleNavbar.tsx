@@ -144,7 +144,7 @@ export function NavbarSimpleColored({
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Navbar height={"100vh"} width={{ sm: 300 }} className={classes.navbar}>
+      <Navbar height={"110vh"} width={{ sm: 300 }} className={classes.navbar}>
         <Navbar.Section sx={{ marginTop: "20px" }} p="md">
           <Group className={classes.header} position="center">
             <MantineLogo size={28} inverted />

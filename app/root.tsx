@@ -1,8 +1,9 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { withEmotionCache } from "@emotion/react";
-import { createEmotionCache, MantineProvider } from "@mantine/core";
+import { Box, createEmotionCache, MantineProvider } from "@mantine/core";
 import { StylesPlaceholder } from "@mantine/remix";
-import { json, LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -48,7 +49,9 @@ export default function App() {
     <Document>
       <ChakraProvider>
         <GeneralLayout>
-          <Outlet />
+          <Box>
+            <Outlet />
+          </Box>
         </GeneralLayout>
       </ChakraProvider>
     </Document>

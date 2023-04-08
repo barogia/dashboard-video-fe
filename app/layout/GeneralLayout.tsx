@@ -17,7 +17,7 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
         </>
       ) : (
         <NavbarSimpleColored>
-          <Box>{children}</Box>
+          <Box sx={{ width: "100%" }}>{children}</Box>
         </NavbarSimpleColored>
       )}
     </>

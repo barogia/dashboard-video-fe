@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_URL } from "~/constants/env";
-import { GoogleResponse, User } from "~/models/user";
+import type { GoogleResponse } from "~/models/user";
+import { User } from "~/models/user";
 
 export const googleAuthLoginAPI = async (
   token: string
@@ -11,6 +12,23 @@ export const googleAuthLoginAPI = async (
       body: JSON.stringify({
         token,
       }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return await data.json();
+  } catch (error) {
+    console.log(error);
+    return { statusCode: 500, message: `${error}` };
+  }
+};
+
+export const loginAPI = async (body: any) => {
+  try {
+    const data = await fetch(`${API_URL}/authen/login`, {
+      method: "POST",
+      body: JSON.stringify(body),
       headers: {
         "Content-Type": "application/json",
       },
