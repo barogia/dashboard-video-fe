@@ -1,3 +1,5 @@
+import { HeaderTabs } from "~/layout/Headertab";
+
 export default function Camera() {
   return (
     <>

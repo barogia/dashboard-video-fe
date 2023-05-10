@@ -9,6 +9,10 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
 
   const isRouteLoggedIn = routeHaveToBeLoggedIn.includes(pathName);
 
+  const renderTitle = () => {
+    return routes.find((route) => route.route === pathName)?.title;
+  };
+
   return (
     <>
       {isRouteLoggedIn ? (
@@ -17,6 +21,9 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
         </>
       ) : (
         <NavbarSimpleColored>
+          {/* <Box>
+            <h1>{renderTitle()}</h1>
+          </Box> */}
           <Box sx={{ width: "100%" }}>{children}</Box>
         </NavbarSimpleColored>
       )}
@@ -27,3 +34,30 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
 export default GeneralLayout;
 
 const routeHaveToBeLoggedIn = ["/login"];
+
+const routes = [
+  {
+    route: "/",
+    title: "Trang chu",
+  },
+  {
+    route: "/camera",
+    title: "Quản lí Camera",
+  },
+  {
+    route: "/warning",
+    title: "Lịch sử cảnh báo",
+  },
+  {
+    route: "/area",
+    title: "Khu vực",
+  },
+  {
+    route: "/analytic",
+    title: "Thống kê",
+  },
+  {
+    route: "/contact",
+    title: "Liên hệ",
+  },
+];

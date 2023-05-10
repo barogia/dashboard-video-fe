@@ -1,6 +1,7 @@
 import { Box, Text } from "@mantine/core";
 import { color } from "~/config/color";
-
+import ReactPlayer from "react-player";
+import flvjs from "flv.js";
 export default function Index() {
   return (
     <>
@@ -70,6 +71,9 @@ const CameraView = () => {
         height: "300px",
         borderRadius: "8px",
       }}
-    ></Box>
+    >
+      <ReactPlayer url={"https://youtu.be/VPSoNx1gyQ4"} playing={false} />
+    </Box>
   );
 };
+//https://youtu.be/VPSoNx1gyQ4
