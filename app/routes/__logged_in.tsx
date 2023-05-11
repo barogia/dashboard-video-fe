@@ -24,7 +24,7 @@ export default function LoggedIn() {
   return (
     <Box sx={{ background: "#F7F8FC", height: "100%" }}>
       <Box sx={{ height: "50px", padding: "30px" }}></Box>
-      <Box sx={{ padding: "20px 45px" }}>
+      <Box sx={{ padding: "20px 45px", overflow: "auto" }}>
         <HeaderTabs user={data.user} />
         <Outlet />
       </Box>

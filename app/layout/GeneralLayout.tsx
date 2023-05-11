@@ -2,6 +2,7 @@ import { Box } from "@mantine/core";
 import { useLocation } from "@remix-run/react";
 import React from "react";
 import { NavbarSimpleColored } from "./general/DoubleNavbar";
+import BrowserOnly from "~/global-components/BrowserOnly";
 
 const GeneralLayout = ({ children }: { children: JSX.Element }) => {
   const location = useLocation();
@@ -20,12 +21,11 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
           <Box>{children}</Box>
         </>
       ) : (
-        <NavbarSimpleColored>
-          {/* <Box>
-            <h1>{renderTitle()}</h1>
-          </Box> */}
-          <Box sx={{ width: "100%" }}>{children}</Box>
-        </NavbarSimpleColored>
+        <BrowserOnly>
+          <NavbarSimpleColored>
+            <Box sx={{ width: "100%" }}>{children}</Box>
+          </NavbarSimpleColored>
+        </BrowserOnly>
       )}
     </>
   );

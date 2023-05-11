@@ -1,27 +1,47 @@
-import { HeaderTabs } from "~/layout/Headertab";
-import { Box, Table } from "@mantine/core";
+import { Box, Table, Text } from "@mantine/core";
 import ReactPlayer from "react-player";
+import { deleteVideo, getAllVideos } from "~/api/video";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
+import Pagination from "~/design-components/Pagination";
+import { DeleteButton } from "~/design-components/button/DeleteButton";
+import { Toast, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { getAllVideos } from "~/api/video";
-import type { LoaderArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 
-export const loader = async ({ request }: LoaderArgs) => {
-  const videos = await getAllVideos();
+export const loader = async ({ request, params }: LoaderArgs) => {
+  const searchParams = new URL(request.url).searchParams;
+
+  const page = +(searchParams.get("page") || 1);
+  const limit = page * 10;
+  const offset = (page - 1) * 10;
+
+  const videos = await getAllVideos(limit, offset);
   return {
     videos,
   };
 };
 
+export const action = async ({ request }: ActionArgs) => {
+  const formData = await request.formData();
+  const id = formData.get("id") as string;
+  const response = await deleteVideo(id);
+  if (response)
+    return json({
+      message: "success",
+    });
+  return json({
+    message: "fail",
+  });
+};
+
 export default function Camera() {
   const data = useLoaderData();
   const videos = (data?.videos || {}) as { data: any[]; length: number };
-  console.log(videos.data);
   return (
-    <Box sx={{ marginTop: "50px" }}>
-      <h1>Quan ly Video route</h1>
+    <Box sx={{ marginTop: "50px", background: "white", height: "100vh" }}>
       <Box sx={{ marginTop: "50px" }}>
-        <Demo videos={videos?.data} />
+        <Demo videos={videos?.data} length={videos?.length} />
       </Box>
     </Box>
   );
@@ -29,8 +49,36 @@ export default function Camera() {
 
 interface ICameraProps {
   videos: any[];
+  length: number;
 }
-function Demo({ videos }: ICameraProps) {
+function Demo({ videos, length }: ICameraProps) {
+  const toast = useToast();
+  const fetcher = useFetcher();
+  const onDeleteVideo = async (id: string) => {
+    try {
+      fetcher.submit(
+        {
+          id: id,
+        },
+        {
+          method: "delete",
+        }
+      );
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (fetcher.data?.message === "success") {
+      toast({
+        title: "Video deleted successfully",
+        colorScheme: "blue",
+        duration: 3000,
+        position: "top-right",
+        // variant: "solid",
+      });
+    }
+  }, [fetcher.data?.message]);
+
   const rows = videos.map((element) => {
     return (
       <tr key={element.name}>
@@ -42,24 +90,59 @@ function Demo({ videos }: ICameraProps) {
             height={200}
           />
         </td>
-        <td>{element.title}</td>
-        <td>{element.securityLevel}</td>
-        <td>{new Date(element.createdAt).toLocaleDateString()}</td>
+        <td style={{ fontWeight: 600, fontSize: 14 }}>{element.title}</td>
+        <td style={{ fontWeight: 500, fontSize: 14 }}>
+          {element.securityLevel}
+        </td>
+        <td style={{ fontWeight: 500, fontSize: 14 }}>
+          {new Date(element.createdAt).toLocaleDateString()}
+        </td>
+        <td>
+          <DeleteButton onDelete={() => onDeleteVideo(element.id)} />
+        </td>
       </tr>
     );
   });
 
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th>Video</th>
-          <th>Title</th>
-          <th>Security Level</th>
-          <th>Created At</th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
+    <>
+      <Table
+        sx={{
+          background: "white",
+          border: "1px solid #e5e7eb",
+          borderRadius: "6px",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          marginBottom: "20px",
+        }}
+      >
+        <thead>
+          <tr>
+            {titles.map((title) => (
+              <th
+                key={title}
+                style={{
+                  backgroundColor: "#f3f4f6",
+                  borderBottom: "1px solid #e5e7eb",
+                  padding: "10px",
+                  fontWeight: "bold",
+                  color: "#374151",
+                  textTransform: "uppercase",
+                }}
+              >
+                {title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+      <Pagination
+        itemPerPage={10}
+        totalItems={length}
+        css={{ paddingBottom: "50px" }}
+      />
+    </>
   );
 }
+
+const titles = ["Video", "Title", "Security Level", "Created At", "Delete"];

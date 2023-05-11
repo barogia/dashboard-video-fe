@@ -1,2 +1,2 @@
-export const API_URL = "http://localhost:8000";
+export const API_URL = "https://test.tapchitrading.com/";
 export const SESSION_SECRET = "barogiamuahaha";

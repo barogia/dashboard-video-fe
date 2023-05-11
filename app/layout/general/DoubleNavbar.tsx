@@ -12,7 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { MantineLogo } from "@mantine/ds";
 import { color } from "~/config/color";
-import { useNavigate } from "@remix-run/react";
+import { useLocation, useNavigate } from "@remix-run/react";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -119,20 +119,22 @@ export function NavbarSimpleColored({
   children: React.ReactNode;
 }) {
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState("Trang chủ");
+  const pathname = useLocation().pathname;
+
+  const [active, setActive] = useState(pathname || "/");
   const navigate = useNavigate();
 
   const linksRender = (data: NavbarItemProps[]) => {
     return data.map((item) => (
       <a
         className={cx(classes.link, {
-          [classes.linkActive]: item.label === active,
+          [classes.linkActive]: item.link === active,
         })}
         href={item.link}
         key={item.label}
         onClick={(event) => {
           event.preventDefault();
-          setActive(item.label);
+          setActive(item.link);
           navigate(item.link);
         }}
       >
