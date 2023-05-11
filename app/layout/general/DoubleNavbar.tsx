@@ -101,7 +101,7 @@ interface NavbarItemProps {
 
 const data: NavbarItemProps[] = [
   { link: "/", label: "Trang chủ", icon: <IconHome /> },
-  { link: "/camera", label: "Quản lí Camera", icon: <IconDatabase /> },
+  { link: "/camera", label: "Quản lí Video", icon: <IconDatabase /> },
   { link: "/warning", label: "Cảnh báo", icon: <IconFingerprint /> },
   { link: "/area", label: "Khu vực", icon: <IconKey /> },
   { link: "/analytic", label: "Thông kê", icon: <IconDatabaseImport /> },

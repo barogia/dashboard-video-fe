@@ -42,7 +42,7 @@ const routes = [
   },
   {
     route: "/camera",
-    title: "Quản lí Camera",
+    title: "Quản lí Video",
   },
   {
     route: "/warning",

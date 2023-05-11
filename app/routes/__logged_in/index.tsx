@@ -1,8 +1,21 @@
 import { Box, Text } from "@mantine/core";
 import { color } from "~/config/color";
 import ReactPlayer from "react-player";
-import flvjs from "flv.js";
+import type { LoaderArgs } from "@remix-run/node";
+import { getAllVideos } from "~/api/video";
+import { useLoaderData } from "@remix-run/react";
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const videos = await getAllVideos();
+  return {
+    videos,
+  };
+};
+
 export default function Index() {
+  const data = useLoaderData();
+  const videos = (data?.videos || {}) as { data: any[]; length: number };
+
   return (
     <>
       <Box sx={{ background: "white" }}>
@@ -14,8 +27,8 @@ export default function Index() {
             justifyContent: "center",
           }}
         >
-          <BoxContent />
-          <BoxContent />
+          <BoxContent length={videos?.length} />
+          <BoxContent length={videos?.length} />
         </Box>
         <Box
           sx={{
@@ -38,7 +51,7 @@ export default function Index() {
   );
 }
 
-const BoxContent = () => {
+const BoxContent = ({ length }: { length: number }) => {
   return (
     <Box
       sx={{
@@ -53,10 +66,10 @@ const BoxContent = () => {
       }}
     >
       <Text sx={{ fontWeight: 700, color: color.main, fontSize: "20px" }}>
-        Total Camera
+        Total Video
       </Text>
       <Text sx={{ fontWeight: 700, color: color.main, fontSize: "40px" }}>
-        64
+        {length}
       </Text>
     </Box>
   );
