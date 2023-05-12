@@ -12,7 +12,7 @@ import {
 import { createUserSession, getUserToken } from "~/utils/cookie";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { loginAPI } from "~/api/auth";
+import { loginAPI, registerAPI } from "~/api/auth";
 import { useCatch, useFetcher, useNavigate } from "@remix-run/react";
 import BrowserOnly from "~/global-components/BrowserOnly";
 import { color } from "~/config/color";
@@ -25,6 +25,7 @@ import { useEffect } from "react";
 type FormValues = {
   email: string;
   password: string;
+  name: string;
 };
 
 const validation = yup
@@ -37,6 +38,7 @@ const validation = yup
       .string()
       .required("This field is required")
       .min(6, "Please enter more than 6 characters"),
+    name: yup.string().required("This field is required"),
   })
   .required();
 
@@ -44,15 +46,20 @@ export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const name = formData.get("name") as string;
+
   const body = {
     email,
     password,
+    name,
   };
 
-  const response = await loginAPI(body);
-
-  if ("accessToken" in response) {
-    return await createUserSession(response.accessToken, "/");
+  const response = await registerAPI(body);
+  console.log({ response });
+  if ("id" in response) {
+    return {
+      data: response,
+    };
   }
   return {
     message: "error",
@@ -66,26 +73,28 @@ export const loader = async ({ request }: LoaderArgs) => {
   return null;
 };
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const formMethods = useForm<FormValues>({
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     },
     mode: "onBlur",
     resolver: yupResolver(validation),
   });
   const toast = useToast();
   const fetcher = useFetcher();
-  const { handleSubmit, register } = formMethods;
   const navigate = useNavigate();
+  const { handleSubmit, register } = formMethods;
 
   const onSubmit = async (data: FormValues) => {
-    const { email, password } = data;
+    const { email, password, name } = data;
     fetcher.submit(
       {
         email,
         password,
+        name,
       },
       {
         method: "post",
@@ -93,11 +102,25 @@ const LoginPage = () => {
     );
   };
 
+  console.log(fetcher.data?.data);
+
   useEffect(() => {
     if (fetcher.data?.message === "error") {
       toast({
-        title: "Wrong email or password",
+        title: "Already have an account with email like that",
         colorScheme: "red",
+        duration: 3000,
+        position: "top-right",
+        variant: "solid",
+      });
+    }
+    if (fetcher.data?.data?.id) {
+      navigate("/login");
+
+      toast({
+        title:
+          "Please confirm your email to have fully access to the dashboard",
+        colorScheme: "green",
         duration: 3000,
         position: "top-right",
         variant: "solid",
@@ -130,6 +153,12 @@ const LoginPage = () => {
                     placeholder="Email address"
                     {...register("email")}
                   />
+                  <TextInput
+                    required
+                    label="Name"
+                    placeholder="Name "
+                    {...register("name")}
+                  />
 
                   <PasswordInput
                     required
@@ -141,7 +170,7 @@ const LoginPage = () => {
 
                 <Box sx={{ width: "100%", marginTop: "24px" }}>
                   <Button type="submit" sx={{ width: "100%" }}>
-                    Login
+                    {fetcher.state === "idle" ? "Register" : "Loading..."}
                   </Button>
                 </Box>
 
@@ -152,14 +181,14 @@ const LoginPage = () => {
                     color="dimmed"
                     size="xs"
                   >
-                    Want to login ?{" "}
+                    Already have an account?{" "}
                     <Anchor
                       component={"span"}
                       color="dimmed"
                       size="xs"
-                      onClick={() => navigate("/register")}
+                      onClick={() => navigate("/login")}
                     >
-                      Register
+                      Login
                     </Anchor>
                   </Anchor>
                 </Box>
@@ -172,7 +201,7 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
 
 export function CatchBoundary() {
   const caught = useCatch();

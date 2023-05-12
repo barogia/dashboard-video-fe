@@ -1,37 +1,61 @@
 import { Button, Center, Modal, Text } from "@mantine/core";
 import { useState } from "react";
 
-export function DeleteButton({ onDelete }: { onDelete: () => void }) {
+export function DeleteButton({
+  onFunction,
+  isDelete,
+}: {
+  onFunction: () => void;
+  isDelete: boolean;
+}) {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleDelete = () => {
-    onDelete();
+    onFunction();
     setModalOpen(false);
+  };
+
+  const handleModal = () => {
+    if (isDelete) {
+      setModalOpen(true);
+    } else {
+      onFunction();
+    }
   };
 
   return (
     <>
-      <Button variant="outline" color="red" onClick={() => setModalOpen(true)}>
-        Delete
-      </Button>
-      <Modal
-        opened={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        size="xs"
-        title="Delete Confirmation"
-        withCloseButton
-        centered
+      <Button
+        variant="outline"
+        color={isDelete ? "red" : "blue"}
+        onClick={() => handleModal()}
       >
-        <Text size="sm">Are you sure you want to delete this item?</Text>
-        <Button
-          variant="filled"
-          color="red"
-          onClick={handleDelete}
-          style={{ marginTop: "16px" }}
+        {isDelete ? "Delete" : "View"}
+      </Button>
+      {isDelete ? (
+        <Modal
+          opened={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          size="xs"
+          title={isDelete ? "Delete Confirmation" : "Edit Confirmation"}
+          withCloseButton
+          centered
         >
-          Confirm Delete
-        </Button>
-      </Modal>
+          <Text size="sm">
+            {isDelete
+              ? "Are you sure you want to delete this item?"
+              : "Edit this item"}
+          </Text>
+          <Button
+            variant="filled"
+            color={isDelete ? "red" : "blue"}
+            onClick={handleDelete}
+            style={{ marginTop: "16px" }}
+          >
+            Confirm Delete
+          </Button>
+        </Modal>
+      ) : null}
     </>
   );
 }

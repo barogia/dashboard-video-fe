@@ -1,6 +1,6 @@
 import { Box, Button, Table, Text } from "@mantine/core";
 import ReactPlayer from "react-player";
-import { deleteVideo, getAllVideos } from "~/api/video";
+import { deleteVideo, getAllVideos, getVideosByUser } from "~/api/video";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -13,40 +13,33 @@ import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { Toast, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { getUser } from "~/api/user";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
+  const { id } = params;
   const searchParams = new URL(request.url).searchParams;
 
   const page = +(searchParams.get("page") || 1);
   const limit = page * 10;
   const offset = (page - 1) * 10;
 
-  const videos = await getAllVideos(limit, offset);
+  const user = await getUser(id as string);
+  const videos = await getVideosByUser(id as string, limit, offset);
   return {
+    user,
     videos,
   };
 };
 
-export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
-  const id = formData.get("id") as string;
-  const response = await deleteVideo(id);
-  if (response)
-    return json({
-      message: "success",
-    });
-  return json({
-    message: "fail",
-  });
-};
-
-export default function Camera() {
+export default function DetailAnalytic() {
   const data = useLoaderData();
   const videos = (data?.videos || {}) as { data: any[]; length: number };
+  const user = data?.user || {};
+  console.log(data);
   return (
     <Box sx={{ marginTop: "50px", background: "white", height: "100vh" }}>
       <Box sx={{ marginTop: "50px" }}>
-        <Demo videos={videos?.data} length={videos?.length} />
+        <Demo videos={videos?.data} length={videos?.length} user={user} />
       </Box>
     </Box>
   );
@@ -55,24 +48,13 @@ export default function Camera() {
 interface ICameraProps {
   videos: any[];
   length: number;
+  user: any;
 }
 
-function Demo({ videos, length }: ICameraProps) {
+function Demo({ videos, length, user }: ICameraProps) {
   const toast = useToast();
   const fetcher = useFetcher();
   const navigate = useNavigate();
-  const onDeleteVideo = async (id: string) => {
-    try {
-      fetcher.submit(
-        {
-          id: id,
-        },
-        {
-          method: "delete",
-        }
-      );
-    } catch (error) {}
-  };
 
   const onView = (id: string) => {
     console.log(id);
@@ -119,7 +101,6 @@ function Demo({ videos, length }: ICameraProps) {
               onFunction={() => onView(element.id)}
             />
           </Box>
-          <DeleteButton isDelete onFunction={() => onDeleteVideo(element.id)} />
         </td>
       </tr>
     );
@@ -135,15 +116,9 @@ function Demo({ videos, length }: ICameraProps) {
           padding: "20px",
         }}
       >
-        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>Create new video</Text>
-        <Button
-          variant="filled"
-          color={"blue"}
-          sx={{ width: "300px" }}
-          onClick={() => navigate("/camera-detail")}
-        >
-          Create
-        </Button>
+        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>
+          User Profile : {user?.email}
+        </Text>
       </Box>
       <Table
         sx={{

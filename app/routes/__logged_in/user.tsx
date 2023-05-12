@@ -13,6 +13,7 @@ import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { Toast, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { getAllUsers } from "~/api/user";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const searchParams = new URL(request.url).searchParams;
@@ -21,28 +22,15 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const limit = page * 10;
   const offset = (page - 1) * 10;
 
-  const videos = await getAllVideos(limit, offset);
+  const users = await getAllUsers(limit, offset);
   return {
-    videos,
+    users,
   };
 };
 
-export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
-  const id = formData.get("id") as string;
-  const response = await deleteVideo(id);
-  if (response)
-    return json({
-      message: "success",
-    });
-  return json({
-    message: "fail",
-  });
-};
-
-export default function Camera() {
+export default function UserPage() {
   const data = useLoaderData();
-  const videos = (data?.videos || {}) as { data: any[]; length: number };
+  const videos = (data?.users || {}) as { data: any[]; length: number };
   return (
     <Box sx={{ marginTop: "50px", background: "white", height: "100vh" }}>
       <Box sx={{ marginTop: "50px" }}>
@@ -58,60 +46,21 @@ interface ICameraProps {
 }
 
 function Demo({ videos, length }: ICameraProps) {
-  const toast = useToast();
-  const fetcher = useFetcher();
   const navigate = useNavigate();
-  const onDeleteVideo = async (id: string) => {
-    try {
-      fetcher.submit(
-        {
-          id: id,
-        },
-        {
-          method: "delete",
-        }
-      );
-    } catch (error) {}
-  };
 
   const onView = (id: string) => {
-    console.log(id);
-    navigate(`/camera-detail/${id}`);
+    navigate(``);
   };
-
-  useEffect(() => {
-    if (fetcher.data?.message === "success") {
-      toast({
-        title: "Video deleted successfully",
-        colorScheme: "blue",
-        duration: 3000,
-        position: "top-right",
-        // variant: "solid",
-      });
-    }
-  }, [fetcher.data?.message]);
 
   const rows = videos.map((element) => {
     return (
       <tr key={element.name}>
-        <td>
-          <ReactPlayer
-            url={element.url}
-            playing={false}
-            width={200}
-            height={200}
-          />
-        </td>
-        <td style={{ fontWeight: 600, fontSize: 14 }}>{element.title}</td>
+        <td style={{ fontWeight: 600, fontSize: 14 }}>{element.email}</td>
+        <td style={{ fontWeight: 500, fontSize: 14 }}>{element.name}</td>
         <td style={{ fontWeight: 500, fontSize: 14 }}>
-          {element.securityLevel}
+          {element.isEmailConfirmed ? "Confirmed" : "Not Confirmed"}
         </td>
-        <td style={{ fontWeight: 500, fontSize: 14 }}>
-          {new Date(element.createdAt).toLocaleDateString()}
-        </td>
-        <td style={{ fontWeight: 500, fontSize: 14 }}>
-          {element?.createdBy?.email}
-        </td>
+
         <td>
           <Box sx={{ padding: "10px 0" }}>
             <DeleteButton
@@ -119,7 +68,6 @@ function Demo({ videos, length }: ICameraProps) {
               onFunction={() => onView(element.id)}
             />
           </Box>
-          <DeleteButton isDelete onFunction={() => onDeleteVideo(element.id)} />
         </td>
       </tr>
     );
@@ -127,24 +75,6 @@ function Demo({ videos, length }: ICameraProps) {
 
   return (
     <Box sx={{ display: "flex", gap: "30px", flexDirection: "column" }}>
-      <Box
-        sx={{
-          display: "flex",
-          gap: "16px",
-          flexDirection: "column",
-          padding: "20px",
-        }}
-      >
-        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>Create new video</Text>
-        <Button
-          variant="filled"
-          color={"blue"}
-          sx={{ width: "300px" }}
-          onClick={() => navigate("/camera-detail")}
-        >
-          Create
-        </Button>
-      </Box>
       <Table
         sx={{
           background: "white",
@@ -184,11 +114,4 @@ function Demo({ videos, length }: ICameraProps) {
   );
 }
 
-const titles = [
-  "Video",
-  "Title",
-  "Security Level",
-  "Created At",
-  "Created by",
-  "Action",
-];
+const titles = ["Email", "Name", "Confirm Email", "Action"];

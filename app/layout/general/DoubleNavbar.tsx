@@ -102,16 +102,16 @@ interface NavbarItemProps {
 const data: NavbarItemProps[] = [
   { link: "/", label: "Trang chủ", icon: <IconHome /> },
   { link: "/camera", label: "Quản lí Video", icon: <IconDatabase /> },
-  { link: "/warning", label: "Cảnh báo", icon: <IconFingerprint /> },
-  { link: "/area", label: "Khu vực", icon: <IconKey /> },
+  // { link: "/warning", label: "Cảnh báo", icon: <IconFingerprint /> },
+  { link: "/user", label: "Người dùng", icon: <IconKey /> },
   { link: "/analytic", label: "Thông kê", icon: <IconDatabaseImport /> },
-  { link: "/contact", label: "Liên hệ", icon: <Icon2fa /> },
+  // { link: "/contact", label: "Liên hệ", icon: <Icon2fa /> },
 ];
 
-const footerData: NavbarItemProps[] = [
-  { link: "/setting", label: "Cài đặt", icon: <IconSettings /> },
-  { link: "", label: "Đăng kí", icon: <IconLogout /> },
-];
+// const footerData: NavbarItemProps[] = [
+//   { link: "/setting", label: "Cài đặt", icon: <IconSettings /> },
+//   { link: "", label: "Đăng kí", icon: <IconLogout /> },
+// ];
 
 export function NavbarSimpleColored({
   children,
@@ -164,9 +164,9 @@ export function NavbarSimpleColored({
           </Box>
         </Navbar.Section>
 
-        <Divider sx={{ width: "100%" }} />
+        {/* <Divider sx={{ width: "100%" }} /> */}
 
-        <Navbar.Section p="md">
+        {/* <Navbar.Section p="md">
           <Box
             sx={{
               display: "flex",
@@ -178,7 +178,7 @@ export function NavbarSimpleColored({
           >
             {linksRender(footerData)}
           </Box>
-        </Navbar.Section>
+        </Navbar.Section> */}
       </Navbar>
       {children}
     </Box>

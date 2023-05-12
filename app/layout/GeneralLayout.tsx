@@ -33,7 +33,7 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
 
 export default GeneralLayout;
 
-const routeHaveToBeLoggedIn = ["/login"];
+const routeHaveToBeLoggedIn = ["/login", "/register"];
 
 const routes = [
   {
