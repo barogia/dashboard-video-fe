@@ -13,24 +13,25 @@ import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { Toast, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { deleteHome, getAllHomes } from "~/api/home";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const searchParams = new URL(request.url).searchParams;
 
   const page = +(searchParams.get("page") || 1);
-  const limit = page * 10;
-  const offset = (page - 1) * 10;
+  const limit = page * 4;
+  const offset = (page - 1) * 4;
 
-  const videos = await getAllVideos(limit, offset);
+  const homes = await getAllHomes(limit, offset);
   return {
-    videos,
+    homes,
   };
 };
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
   const id = formData.get("id") as string;
-  const response = await deleteVideo(id);
+  const response = await deleteHome(id);
   if (response)
     return json({
       message: "success",
@@ -40,13 +41,13 @@ export const action = async ({ request }: ActionArgs) => {
   });
 };
 
-export default function Camera() {
+export default function Area() {
   const data = useLoaderData();
-  const videos = (data?.videos || {}) as { data: any[]; length: number };
+  const videos = (data?.homes || {}) as { data: any[]; length: number };
   return (
     <Box sx={{ marginTop: "50px", background: "white", height: "100vh" }}>
       <Box sx={{ marginTop: "50px" }}>
-        <Demo videos={videos?.data} length={videos?.length} />
+        <Demo videos={videos?.data} length={videos?.length || 0} />
       </Box>
     </Box>
   );
@@ -76,13 +77,13 @@ function Demo({ videos, length }: ICameraProps) {
 
   const onView = (id: string) => {
     console.log(id);
-    navigate(`/camera-detail/${id}`);
+    navigate(`/area-detail/${id}`);
   };
 
   useEffect(() => {
     if (fetcher.data?.message === "success") {
       toast({
-        title: "Video deleted successfully",
+        title: "Area deleted successfully",
         colorScheme: "blue",
         duration: 3000,
         position: "top-right",
@@ -91,30 +92,16 @@ function Demo({ videos, length }: ICameraProps) {
     }
   }, [fetcher.data?.message]);
 
-  const rows = videos.map((element) => {
-    const overTitle =
-      element?.title?.length > 30
-        ? `${element?.title?.slice(0, 30)}...`
-        : `${element?.title}`;
+  const rows = videos?.map((element) => {
     return (
       <tr key={element.name}>
-        <td style={{ textAlign: "center", fontWeight: 600, fontSize: "16px" }}>
-          {/* <ReactPlayer
-            url={element.url}
-            playing={false}
-            width={200}
-            height={200}
-          /> */}
-          {element.id}
-        </td>
-        <td style={{ fontWeight: 600, fontSize: 14 }}>{overTitle}</td>
-        <td style={{ fontWeight: 500, fontSize: 14 }}>{element?.home?.name}</td>
-
+        <td style={{ fontWeight: 600, fontSize: 14 }}>{element.name}</td>
         <td style={{ fontWeight: 600, fontSize: 14 }}>
-          {element?.createdBy?.email}
+          {element?.camera?.length}
         </td>
-        <td style={{ fontWeight: 700, fontSize: 14 }}>
-          {element.securityLevel}
+
+        <td style={{ fontWeight: 500, fontSize: 14 }}>
+          {element.activate ? "Active" : "In active"}
         </td>
         <td style={{ fontWeight: 500, fontSize: 14 }}>
           {new Date(element.createdAt).toLocaleDateString()}
@@ -149,16 +136,14 @@ function Demo({ videos, length }: ICameraProps) {
           padding: "20px",
         }}
       >
-        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>
-          Create new camera
-        </Text>
+        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>Create new Area</Text>
         <Button
           variant="filled"
           color={"blue"}
           sx={{ width: "300px" }}
-          onClick={() => navigate("/camera-detail")}
+          onClick={() => navigate("/area-detail")}
         >
-          Create
+          Add new area
         </Button>
       </Box>
       <Table
@@ -192,7 +177,7 @@ function Demo({ videos, length }: ICameraProps) {
         <tbody>{rows}</tbody>
       </Table>
       <Pagination
-        itemPerPage={10}
+        itemPerPage={4}
         totalItems={length}
         css={{ paddingBottom: "50px" }}
       />
@@ -200,12 +185,4 @@ function Demo({ videos, length }: ICameraProps) {
   );
 }
 
-const titles = [
-  "Serial",
-  "Title",
-  "Area",
-  "Created by",
-  "Security Level",
-  "Created At",
-  "Actions",
-];
+const titles = ["Area name", "Video", "Activate", "Created At", "Action"];

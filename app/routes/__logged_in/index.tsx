@@ -4,17 +4,22 @@ import ReactPlayer from "react-player";
 import type { LoaderArgs } from "@remix-run/node";
 import { getAllVideos } from "~/api/video";
 import { useLoaderData } from "@remix-run/react";
+import { getAllUsers } from "~/api/user";
+import Pagination from "~/design-components/Pagination";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const videos = await getAllVideos();
+  const users = await getAllUsers();
   return {
     videos,
+    users,
   };
 };
 
 export default function Index() {
   const data = useLoaderData();
   const videos = (data?.videos || {}) as { data: any[]; length: number };
+  const users = (data?.users || {}) as { data: any[]; length: number };
 
   return (
     <>
@@ -27,8 +32,8 @@ export default function Index() {
             justifyContent: "center",
           }}
         >
-          <BoxContent length={videos?.length} />
-          <BoxContent length={videos?.length} />
+          <BoxContent title="Camera" length={videos?.length} />
+          <BoxContent title="Profile" length={users?.length} />
         </Box>
         <Box
           sx={{
@@ -40,18 +45,16 @@ export default function Index() {
             marginTop: "20px",
           }}
         >
-          {Array(4)
-            .fill(0)
-            .map((_, index) => (
-              <CameraView key={index} />
-            ))}
+          {(videos?.data as []).slice(0, 4).map((video, index) => {
+            return <CameraView key={index} url={(video as any)?.url} />;
+          })}
         </Box>
       </Box>
     </>
   );
 }
 
-const BoxContent = ({ length }: { length: number }) => {
+const BoxContent = ({ length, title }: { length: number; title: string }) => {
   return (
     <Box
       sx={{
@@ -66,7 +69,7 @@ const BoxContent = ({ length }: { length: number }) => {
       }}
     >
       <Text sx={{ fontWeight: 700, color: color.main, fontSize: "20px" }}>
-        Total Video
+        Total {title}
       </Text>
       <Text sx={{ fontWeight: 700, color: color.main, fontSize: "40px" }}>
         {length}
@@ -75,17 +78,10 @@ const BoxContent = ({ length }: { length: number }) => {
   );
 };
 
-const CameraView = () => {
+const CameraView = ({ url }: { url: string }) => {
   return (
-    <Box
-      sx={{
-        background: "black",
-        width: "540px",
-        height: "300px",
-        borderRadius: "8px",
-      }}
-    >
-      <ReactPlayer url={"https://youtu.be/VPSoNx1gyQ4"} playing={false} />
+    <Box sx={{}}>
+      <ReactPlayer width={"540px"} height={"300px"} url={url} playing={false} />
     </Box>
   );
 };

@@ -49,6 +49,9 @@ const DetailCamera = () => {
           controls
           fallback={<LoadingOverlay visible={true} overlayBlur={2} />}
         />
+        <Title order={6}>Area : {video?.home?.name}</Title>
+        <Title order={6}>Author : {video?.user?.email}</Title>
+
         <Title order={6}>
           Created At : {new Date(video?.createdAt).toLocaleDateString()}
         </Title>

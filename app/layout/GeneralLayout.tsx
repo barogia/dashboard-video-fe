@@ -10,10 +10,6 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
 
   const isRouteLoggedIn = routeHaveToBeLoggedIn.includes(pathName);
 
-  const renderTitle = () => {
-    return routes.find((route) => route.route === pathName)?.title;
-  };
-
   return (
     <>
       {isRouteLoggedIn ? (
@@ -34,30 +30,3 @@ const GeneralLayout = ({ children }: { children: JSX.Element }) => {
 export default GeneralLayout;
 
 const routeHaveToBeLoggedIn = ["/login", "/register"];
-
-const routes = [
-  {
-    route: "/",
-    title: "Trang chu",
-  },
-  {
-    route: "/camera",
-    title: "Quản lí Video",
-  },
-  {
-    route: "/warning",
-    title: "Lịch sử cảnh báo",
-  },
-  {
-    route: "/area",
-    title: "Khu vực",
-  },
-  {
-    route: "/analytic",
-    title: "Thống kê",
-  },
-  {
-    route: "/contact",
-    title: "Liên hệ",
-  },
-];

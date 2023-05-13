@@ -1,24 +1,37 @@
-import { Box, Button, Text, TextInput } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Loader,
+  LoadingOverlay,
+  Select,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useToast } from "@chakra-ui/react";
 import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { createVideo, getVideo, updateVideo } from "~/api/video";
 import ReactPlayer from "react-player";
 import { getUserToken } from "~/utils/cookie";
+import FormSelect from "~/design-components/select/FormSelect";
+import { getAllHomes } from "~/api/home";
+import { useDisclosure } from "@mantine/hooks";
 
 type FormValues = {
   url: string;
   title: string;
+  home: string;
 };
 
 const validation = yup
   .object({
     url: yup.string(),
     title: yup.string(),
+    home: yup.string(),
   })
   .required();
 
@@ -27,9 +40,11 @@ export const action = async ({ request, params }: ActionArgs) => {
   const validToken = (await getUserToken(request)) as string;
   const title = formData.get("title") as string;
   const url = formData.get("url") as string;
+  const home = formData.get("home") as string;
   const body = {
     title,
     url,
+    home,
   };
 
   const createdVideo = await createVideo(validToken, body);
@@ -48,18 +63,40 @@ export const action = async ({ request, params }: ActionArgs) => {
 };
 
 export const loader = async ({ context, params, request }: LoaderArgs) => {
-  return null;
+  let limit = 1000,
+    offset = 0;
+  const homes = await getAllHomes(limit, offset);
+  return {
+    homes,
+  };
 };
 
 const CreateVideo = () => {
   const data = useLoaderData();
 
-  const video = data?.video?.data || {};
+  const homesData = data?.homes || {};
+
+  // const options = (homesData?.data as [])?.map((item) => {
+  //   return {
+  //     label: (item as any)?.name,
+  //     value: (item as any)?.id,
+  //   };
+  // });
+
+  const options = useMemo(() => {
+    return (homesData?.data as []).map((item, idx) => {
+      return {
+        value: (item as any)?.id,
+        label: (item as any)?.name,
+      };
+    });
+  }, [homesData?.data]);
 
   const formMethods = useForm<FormValues>({
     defaultValues: {
       title: "",
       url: "",
+      home: "",
     },
     mode: "onBlur",
     resolver: yupResolver(validation),
@@ -67,15 +104,16 @@ const CreateVideo = () => {
   const toast = useToast();
   const fetcher = useFetcher();
   const navigate = useNavigate();
-  const { handleSubmit, register, watch } = formMethods;
+  const { handleSubmit, register, watch, setValue } = formMethods;
+  const [visible, { toggle }] = useDisclosure(false);
 
   const onSubmit = async (data: FormValues) => {
-    const { title, url } = data;
-    console.log(data);
+    const { title, url, home } = data;
     fetcher.submit(
       {
         title,
         url,
+        home,
       },
       {
         method: "post",
@@ -92,7 +130,7 @@ const CreateVideo = () => {
         position: "top-right",
         variant: "solid",
       });
-      navigate(`/camera-detail/${fetcher.data?.data?.id}`);
+      navigate(`/camera`);
     } else if (fetcher.data?.message === "error") {
       toast({
         title: "Created failure",
@@ -104,35 +142,74 @@ const CreateVideo = () => {
     }
   }, [fetcher?.data]);
 
+  console.log(watch("home"));
+
   return (
-    <Box>
-      <Text size="xl" weight={500} sx={{ textAlign: "center" }}>
-        Camera Dashboard
-      </Text>
+    <Box maw={"100%"} pos="relative">
+      <LoadingOverlay visible={visible} overlayBlur={5} />
       <Box>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <TextInput
-              label="Title"
-              placeholder="Title "
-              {...register("title")}
-            />
-            <TextInput label="URL" placeholder="URL " {...register("url")} />
+        <Text size="xl" weight={500} sx={{ textAlign: "center" }}>
+          Camera Dashboard
+        </Text>
 
-            <ReactPlayer url={watch("url")} playing={false} controls />
-
-            <Box>
-              <Button
-                variant="filled"
-                color={"blue"}
-                sx={{ width: "300px" }}
-                type="submit"
+        <Box>
+          <FormProvider {...formMethods}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", gap: "24px" }}
               >
-                Create
-              </Button>
-            </Box>
-          </Box>
-        </form>
+                <TextInput
+                  label="Title"
+                  placeholder="Title "
+                  {...register("title")}
+                />
+                <TextInput
+                  label="URL"
+                  placeholder="URL "
+                  {...register("url")}
+                />
+
+                <Select
+                  label="Area"
+                  placeholder="Pick one area"
+                  data={options}
+                  onChange={(value) => setValue("home", value as string)}
+                />
+
+                {watch("url") ? (
+                  <ReactPlayer url={watch("url")} playing={false} controls />
+                ) : null}
+
+                <Box>
+                  <Button
+                    variant="filled"
+                    color={""}
+                    sx={{ width: "300px", padding: "10px", height: "50px" }}
+                    type="submit"
+                    onClick={toggle}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "16px",
+                      }}
+                    >
+                      <Text sx={{ fontSize: "16px" }}>
+                        {fetcher.state === "loading" ? "Creating..." : "Create"}
+                      </Text>
+                      {fetcher.state === "loading" ||
+                      fetcher.state === "submitting" ? (
+                        <Loader size={"sm"} color="dark" />
+                      ) : null}
+                    </Box>
+                  </Button>
+                </Box>
+              </Box>
+            </form>
+          </FormProvider>
+        </Box>
       </Box>
     </Box>
   );

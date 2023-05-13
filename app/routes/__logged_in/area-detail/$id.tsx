@@ -1,6 +1,6 @@
 import { Box, Button, Table, Text } from "@mantine/core";
 import ReactPlayer from "react-player";
-import { deleteVideo, getAllVideos } from "~/api/video";
+import { deleteVideo, getAllVideos, getVideosByUser } from "~/api/video";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -13,40 +13,36 @@ import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { Toast, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { getUser } from "~/api/user";
+import { getHome, getVideosByHome } from "~/api/home";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
+  const { id } = params;
   const searchParams = new URL(request.url).searchParams;
 
   const page = +(searchParams.get("page") || 1);
   const limit = page * 10;
   const offset = (page - 1) * 10;
 
-  const videos = await getAllVideos(limit, offset);
+  const home = await getHome(id as string);
+  const videos = await getVideosByHome(id as string, limit, offset);
   return {
+    home,
     videos,
   };
 };
 
-export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
-  const id = formData.get("id") as string;
-  const response = await deleteVideo(id);
-  if (response)
-    return json({
-      message: "success",
-    });
-  return json({
-    message: "fail",
-  });
-};
-
-export default function Camera() {
+export default function DetailArea() {
   const data = useLoaderData();
-  const videos = (data?.videos || {}) as { data: any[]; length: number };
+  const videos = data?.videos as { data: any[]; length: number };
+  const home = data?.home || {};
+  console.log(videos);
+  console.log(home);
+
   return (
     <Box sx={{ marginTop: "50px", background: "white", height: "100vh" }}>
       <Box sx={{ marginTop: "50px" }}>
-        <Demo videos={videos?.data} length={videos?.length} />
+        <Demo videos={videos?.data} length={videos?.length} user={home?.data} />
       </Box>
     </Box>
   );
@@ -55,24 +51,13 @@ export default function Camera() {
 interface ICameraProps {
   videos: any[];
   length: number;
+  user: any;
 }
 
-function Demo({ videos, length }: ICameraProps) {
+function Demo({ videos, length, user }: ICameraProps) {
   const toast = useToast();
   const fetcher = useFetcher();
   const navigate = useNavigate();
-  const onDeleteVideo = async (id: string) => {
-    try {
-      fetcher.submit(
-        {
-          id: id,
-        },
-        {
-          method: "delete",
-        }
-      );
-    } catch (error) {}
-  };
 
   const onView = (id: string) => {
     console.log(id);
@@ -92,32 +77,25 @@ function Demo({ videos, length }: ICameraProps) {
   }, [fetcher.data?.message]);
 
   const rows = videos.map((element) => {
-    const overTitle =
-      element?.title?.length > 30
-        ? `${element?.title?.slice(0, 30)}...`
-        : `${element?.title}`;
     return (
       <tr key={element.name}>
-        <td style={{ textAlign: "center", fontWeight: 600, fontSize: "16px" }}>
-          {/* <ReactPlayer
+        <td>
+          <ReactPlayer
             url={element.url}
             playing={false}
             width={200}
             height={200}
-          /> */}
-          {element.id}
+          />
         </td>
-        <td style={{ fontWeight: 600, fontSize: 14 }}>{overTitle}</td>
-        <td style={{ fontWeight: 500, fontSize: 14 }}>{element?.home?.name}</td>
-
-        <td style={{ fontWeight: 600, fontSize: 14 }}>
-          {element?.createdBy?.email}
-        </td>
-        <td style={{ fontWeight: 700, fontSize: 14 }}>
+        <td style={{ fontWeight: 600, fontSize: 14 }}>{element.title}</td>
+        <td style={{ fontWeight: 500, fontSize: 14 }}>
           {element.securityLevel}
         </td>
         <td style={{ fontWeight: 500, fontSize: 14 }}>
           {new Date(element.createdAt).toLocaleDateString()}
+        </td>
+        <td style={{ fontWeight: 600, fontSize: 14 }}>
+          {element?.user?.email}
         </td>
         <td>
           <Box sx={{ padding: "10px 0" }}>
@@ -126,21 +104,13 @@ function Demo({ videos, length }: ICameraProps) {
               onFunction={() => onView(element.id)}
             />
           </Box>
-          <DeleteButton isDelete onFunction={() => onDeleteVideo(element.id)} />
         </td>
       </tr>
     );
   });
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: "30px",
-        flexDirection: "column",
-        padding: "20px",
-      }}
-    >
+    <Box sx={{ display: "flex", gap: "30px", flexDirection: "column" }}>
       <Box
         sx={{
           display: "flex",
@@ -150,16 +120,8 @@ function Demo({ videos, length }: ICameraProps) {
         }}
       >
         <Text sx={{ fontSize: "24px", fontWeight: 500 }}>
-          Create new camera
+          Area detail : {user?.name}
         </Text>
-        <Button
-          variant="filled"
-          color={"blue"}
-          sx={{ width: "300px" }}
-          onClick={() => navigate("/camera-detail")}
-        >
-          Create
-        </Button>
       </Box>
       <Table
         sx={{
@@ -201,11 +163,10 @@ function Demo({ videos, length }: ICameraProps) {
 }
 
 const titles = [
-  "Serial",
+  "Video",
   "Title",
-  "Area",
-  "Created by",
   "Security Level",
   "Created At",
-  "Actions",
+  "Created by",
+  "Action",
 ];
