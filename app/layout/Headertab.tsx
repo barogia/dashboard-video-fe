@@ -1,29 +1,16 @@
 import { useState } from "react";
 import {
   createStyles,
-  Container,
   Avatar,
   UnstyledButton,
   Group,
   Text,
   Menu,
-  Tabs,
   Burger,
   Box,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconLogout,
-  IconHeart,
-  IconStar,
-  IconMessage,
-  IconSettings,
-  IconPlayerPause,
-  IconTrash,
-  IconSwitchHorizontal,
-  IconChevronDown,
-} from "@tabler/icons-react";
-import { MantineLogo } from "@mantine/ds";
+import { IconLogout, IconChevronDown } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -74,7 +61,7 @@ interface HeaderTabsProps {
 }
 
 export function HeaderTabs({ user }: HeaderTabsProps) {
-  const { classes, theme, cx } = useStyles();
+  const { classes, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
 
@@ -85,10 +72,11 @@ export function HeaderTabs({ user }: HeaderTabsProps) {
         display: "flex",
         justifyContent: "space-between",
         marginBottom: "20px",
+        background: "#f7f8fc",
       }}
     >
       <Box></Box>
-      <Box className={""}>
+      <Box>
         <Group position="right">
           <Burger
             opened={opened}
@@ -127,10 +115,6 @@ export function HeaderTabs({ user }: HeaderTabsProps) {
               </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-              {/* <Menu.Item icon={<IconSettings size="0.9rem" stroke={1.5} />}>
-                Account settings
-              </Menu.Item> */}
-
               <Menu.Item icon={<IconLogout size="0.9rem" stroke={1.5} />}>
                 <form action="/logout" method="post">
                   <button type="submit">Log out</button>

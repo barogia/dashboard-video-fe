@@ -5,7 +5,6 @@ import type { LoaderArgs } from "@remix-run/node";
 import { getAllVideos } from "~/api/video";
 import { useLoaderData } from "@remix-run/react";
 import { getAllUsers } from "~/api/user";
-import Pagination from "~/design-components/Pagination";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const videos = await getAllVideos();
@@ -81,8 +80,13 @@ const BoxContent = ({ length, title }: { length: number; title: string }) => {
 const CameraView = ({ url }: { url: string }) => {
   return (
     <Box sx={{}}>
-      <ReactPlayer width={"540px"} height={"300px"} url={url} playing={false} />
+      <ReactPlayer
+        width={"540px"}
+        height={"300px"}
+        url={url}
+        playing={false}
+        controls
+      />
     </Box>
   );
 };
-//https://youtu.be/VPSoNx1gyQ4

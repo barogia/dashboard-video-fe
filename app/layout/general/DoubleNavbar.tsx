@@ -9,6 +9,7 @@ import {
   IconLogout,
   IconHome,
   IconDatabase,
+  IconAlertTriangle,
 } from "@tabler/icons-react";
 import { MantineLogo } from "@mantine/ds";
 import { color } from "~/config/color";
@@ -102,7 +103,7 @@ interface NavbarItemProps {
 const data: NavbarItemProps[] = [
   { link: "/", label: "Trang chủ", icon: <IconHome /> },
   { link: "/camera", label: "Quản lí Camera", icon: <IconDatabase /> },
-  { link: "/warning", label: "Cảnh báo", icon: <IconFingerprint /> },
+  { link: "/warning", label: "Cảnh báo", icon: <IconAlertTriangle /> },
   { link: "/area", label: "Khu vực", icon: <IconFingerprint /> },
   { link: "/user", label: "Người dùng", icon: <IconKey /> },
   { link: "/analytic", label: "Thông kê", icon: <IconDatabaseImport /> },
@@ -147,7 +148,7 @@ export function NavbarSimpleColored({
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Navbar height={"110vh"} width={{ sm: 300 }} className={classes.navbar}>
+      <Navbar height={"1200px"} width={{ sm: 300 }} className={classes.navbar}>
         <Navbar.Section sx={{ marginTop: "20px" }} p="md">
           <Group className={classes.header} position="center">
             <MantineLogo size={28} inverted />
@@ -164,22 +165,6 @@ export function NavbarSimpleColored({
             {linksRender(data)}
           </Box>
         </Navbar.Section>
-
-        {/* <Divider sx={{ width: "100%" }} /> */}
-
-        {/* <Navbar.Section p="md">
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              "> a": { padding: "10px 20px" },
-              marginTop: "20px",
-            }}
-          >
-            {linksRender(footerData)}
-          </Box>
-        </Navbar.Section> */}
       </Navbar>
       {children}
     </Box>

@@ -1,18 +1,12 @@
 import { Box, Button, Table, Text } from "@mantine/core";
-import ReactPlayer from "react-player";
 import { deleteVideo, getAllVideos } from "~/api/video";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import {
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-} from "@remix-run/react";
+import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
-import { Toast, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useToast } from "@chakra-ui/react";
+import { useEffect } from "react";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const searchParams = new URL(request.url).searchParams;
@@ -91,6 +85,12 @@ function Demo({ videos, length }: ICameraProps) {
     }
   }, [fetcher.data?.message]);
 
+  const changeColor = (level: string) => {
+    if (level === "LOW") return "green";
+    if (level === "MEDIUM") return "yellow";
+    if (level === "HIGH") return "red";
+  };
+
   const rows = videos.map((element) => {
     const overTitle =
       element?.title?.length > 30
@@ -114,7 +114,23 @@ function Demo({ videos, length }: ICameraProps) {
           {element?.createdBy?.email}
         </td>
         <td style={{ fontWeight: 700, fontSize: 14 }}>
-          {element.securityLevel}
+          <Box
+            sx={{
+              padding: "10px",
+              width: "100px",
+              background: "#363740",
+              borderRadius: "12px",
+            }}
+          >
+            <Text
+              sx={{
+                textAlign: "center",
+                color: changeColor(element?.securityLevel),
+              }}
+            >
+              {element.securityLevel}
+            </Text>
+          </Box>
         </td>
         <td style={{ fontWeight: 500, fontSize: 14 }}>
           {new Date(element.createdAt).toLocaleDateString()}
@@ -149,16 +165,16 @@ function Demo({ videos, length }: ICameraProps) {
           padding: "20px",
         }}
       >
-        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>
+        {/* <Text sx={{ fontSize: "24px", fontWeight: 500 }}>
           Create new camera
-        </Text>
+        </Text> */}
         <Button
           variant="filled"
           color={"blue"}
           sx={{ width: "300px" }}
           onClick={() => navigate("/camera-detail")}
         >
-          Create
+          Create camera
         </Button>
       </Box>
       <Table

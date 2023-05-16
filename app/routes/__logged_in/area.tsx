@@ -14,6 +14,7 @@ import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { Toast, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { deleteHome, getAllHomes } from "~/api/home";
+import { deleteWarning } from "~/api/warning";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const searchParams = new URL(request.url).searchParams;
@@ -31,7 +32,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
   const id = formData.get("id") as string;
-  const response = await deleteHome(id);
+  const response = await deleteWarning(id);
   if (response)
     return json({
       message: "success",
@@ -136,7 +137,7 @@ function Demo({ videos, length }: ICameraProps) {
           padding: "20px",
         }}
       >
-        <Text sx={{ fontSize: "24px", fontWeight: 500 }}>Create new Area</Text>
+        {/* <Text sx={{ fontSize: "24px", fontWeight: 500 }}>Create new Area</Text> */}
         <Button
           variant="filled"
           color={"blue"}

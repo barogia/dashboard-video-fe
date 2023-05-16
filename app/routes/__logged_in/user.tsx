@@ -1,18 +1,8 @@
-import { Box, Button, Table, Text } from "@mantine/core";
-import ReactPlayer from "react-player";
-import { deleteVideo, getAllVideos } from "~/api/video";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import {
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-} from "@remix-run/react";
+import { Box, Table } from "@mantine/core";
+import type { LoaderArgs } from "@remix-run/node";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
-import { Toast, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { getAllUsers } from "~/api/user";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
@@ -74,7 +64,14 @@ function Demo({ videos, length }: ICameraProps) {
   });
 
   return (
-    <Box sx={{ display: "flex", gap: "30px", flexDirection: "column" }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: "30px",
+        flexDirection: "column",
+        padding: "20px",
+      }}
+    >
       <Table
         sx={{
           background: "white",
