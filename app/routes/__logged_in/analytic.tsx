@@ -37,7 +37,6 @@ function Demo({ users, length }: { users: any[]; length: number }) {
   const navigate = useNavigate();
 
   const onView = (id: string) => {
-    console.log(id);
     navigate(`/analytic-detail/${id}`);
   };
 
@@ -45,7 +44,10 @@ function Demo({ users, length }: { users: any[]; length: number }) {
     return (
       <tr key={element.name}>
         <td style={{ fontWeight: 600, fontSize: 14 }}>{element?.email}</td>
-
+        <td style={{ fontWeight: 500, fontSize: 14 }}>{element.name}</td>
+        <td style={{ fontWeight: 500, fontSize: 14 }}>
+          {element.isEmailConfirmed ? "Confirmed" : "Not Confirmed"}
+        </td>
         <td style={{ fontWeight: 500, fontSize: 14 }}>{element?.count}</td>
         <td>
           <Box sx={{ padding: "10px 0" }}>
@@ -107,4 +109,4 @@ function Demo({ users, length }: { users: any[]; length: number }) {
   );
 }
 
-const titles = ["Email", "Amount of videos", "Action"];
+const titles = ["Email", "Name", "Confirm Email", "Amount of videos", "Action"];

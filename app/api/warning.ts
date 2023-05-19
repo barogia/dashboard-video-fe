@@ -19,3 +19,8 @@ export const deleteWarning = (id: string) => {
   const data = fetchAPI(`warning/${id}`, "DELETE");
   return data;
 };
+
+export const getWarningsByMonth = (id: string, time: number) => {
+  const data = fetchAPI(`warning/chart/${id}?time=${time}`, "GET");
+  return data;
+};

@@ -4,9 +4,11 @@ import { useState } from "react";
 export function DeleteButton({
   onFunction,
   isDelete,
+  disabled = false,
 }: {
   onFunction: () => void;
   isDelete: boolean;
+  disabled?: boolean;
 }) {
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -29,6 +31,7 @@ export function DeleteButton({
         variant="outline"
         color={isDelete ? "red" : "blue"}
         onClick={() => handleModal()}
+        disabled={disabled}
       >
         {isDelete ? "Delete" : "View"}
       </Button>

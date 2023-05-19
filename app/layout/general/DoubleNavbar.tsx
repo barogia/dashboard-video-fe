@@ -105,8 +105,10 @@ const data: NavbarItemProps[] = [
   { link: "/camera", label: "Quản lí Camera", icon: <IconDatabase /> },
   { link: "/warning", label: "Cảnh báo", icon: <IconAlertTriangle /> },
   { link: "/area", label: "Khu vực", icon: <IconFingerprint /> },
-  { link: "/user", label: "Người dùng", icon: <IconKey /> },
-  { link: "/analytic", label: "Thông kê", icon: <IconDatabaseImport /> },
+  // { link: "/user", label: "Người dùng", icon: <IconKey /> },
+  { link: "/analytic", label: "Người dùng", icon: <IconDatabaseImport /> },
+  { link: "/statistic", label: "Thống kê", icon: <IconKey /> },
+
   // { link: "/contact", label: "Liên hệ", icon: <Icon2fa /> },
 ];
 

@@ -7,10 +7,13 @@ import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
+import { getUserToken } from "~/utils/cookie";
+import { getUser, getUserByToken } from "~/api/user";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const searchParams = new URL(request.url).searchParams;
-
+  const userToken = (await getUserToken(request)) as string;
+  const user = await getUserByToken(userToken);
   const page = +(searchParams.get("page") || 1);
   const limit = page * 10;
   const offset = (page - 1) * 10;
@@ -18,6 +21,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const videos = await getAllVideos(limit, offset);
   return {
     videos,
+    user,
   };
 };
 
@@ -37,10 +41,12 @@ export const action = async ({ request }: ActionArgs) => {
 export default function Camera() {
   const data = useLoaderData();
   const videos = (data?.videos || {}) as { data: any[]; length: number };
+  const user = data?.user || {};
+
   return (
     <Box sx={{ marginTop: "50px", background: "white", height: "100vh" }}>
       <Box sx={{ marginTop: "50px" }}>
-        <Demo videos={videos?.data} length={videos?.length} />
+        <Demo videos={videos?.data} length={videos?.length} user={user} />
       </Box>
     </Box>
   );
@@ -49,9 +55,10 @@ export default function Camera() {
 interface ICameraProps {
   videos: any[];
   length: number;
+  user: any;
 }
 
-function Demo({ videos, length }: ICameraProps) {
+function Demo({ videos, length, user }: ICameraProps) {
   const toast = useToast();
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -96,15 +103,10 @@ function Demo({ videos, length }: ICameraProps) {
       element?.title?.length > 30
         ? `${element?.title?.slice(0, 30)}...`
         : `${element?.title}`;
+
     return (
       <tr key={element.name}>
         <td style={{ textAlign: "center", fontWeight: 600, fontSize: "16px" }}>
-          {/* <ReactPlayer
-            url={element.url}
-            playing={false}
-            width={200}
-            height={200}
-          /> */}
           {element.id}
         </td>
         <td style={{ fontWeight: 600, fontSize: 14 }}>{overTitle}</td>
@@ -142,7 +144,11 @@ function Demo({ videos, length }: ICameraProps) {
               onFunction={() => onView(element.id)}
             />
           </Box>
-          <DeleteButton isDelete onFunction={() => onDeleteVideo(element.id)} />
+          <DeleteButton
+            disabled={user.email !== element?.createdBy?.email}
+            isDelete
+            onFunction={() => onDeleteVideo(element.id)}
+          />
         </td>
       </tr>
     );

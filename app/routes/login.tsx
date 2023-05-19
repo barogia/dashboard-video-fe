@@ -141,7 +141,7 @@ const LoginPage = () => {
 
                 <Box sx={{ width: "100%", marginTop: "24px" }}>
                   <Button type="submit" sx={{ width: "100%" }}>
-                    {fetcher.state === "idle" ? "Register" : "Loading..."}
+                    {fetcher.state === "idle" ? "Login" : "Loading..."}
                   </Button>
                 </Box>
 

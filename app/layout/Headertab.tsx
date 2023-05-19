@@ -57,7 +57,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface HeaderTabsProps {
-  user: { name: string; image: string };
+  user: { name: string; image: string; email: string };
 }
 
 export function HeaderTabs({ user }: HeaderTabsProps) {
@@ -108,7 +108,7 @@ export function HeaderTabs({ user }: HeaderTabsProps) {
                     size={20}
                   />
                   <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                    {user.name}
+                    {user?.email}
                   </Text>
                   <IconChevronDown size={12} stroke={1.5} />
                 </Group>

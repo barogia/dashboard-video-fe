@@ -20,11 +20,14 @@ import { getUserToken } from "~/utils/cookie";
 import FormSelect from "~/design-components/select/FormSelect";
 import { getAllHomes } from "~/api/home";
 import { useDisclosure } from "@mantine/hooks";
+import { warningOptions } from "../warning-detail";
+import type { WarningLevel } from "~/constants/enum";
 
 type FormValues = {
   url: string;
   title: string;
   home: string;
+  securityLevel: string;
 };
 
 const validation = yup
@@ -32,6 +35,7 @@ const validation = yup
     url: yup.string(),
     title: yup.string(),
     home: yup.string(),
+    securityLevel: yup.string(),
   })
   .required();
 
@@ -41,10 +45,13 @@ export const action = async ({ request, params }: ActionArgs) => {
   const title = formData.get("title") as string;
   const url = formData.get("url") as string;
   const home = formData.get("home") as string;
+  const securityLevel = formData.get("securityLevel") as string;
+
   const body = {
     title,
     url,
     home,
+    securityLevel,
   };
 
   const createdVideo = await createVideo(validToken, body);
@@ -76,13 +83,6 @@ const CreateVideo = () => {
 
   const homesData = data?.homes || {};
 
-  // const options = (homesData?.data as [])?.map((item) => {
-  //   return {
-  //     label: (item as any)?.name,
-  //     value: (item as any)?.id,
-  //   };
-  // });
-
   const options = useMemo(() => {
     return (homesData?.data as []).map((item, idx) => {
       return {
@@ -97,6 +97,7 @@ const CreateVideo = () => {
       title: "",
       url: "",
       home: "",
+      securityLevel: "",
     },
     mode: "onBlur",
     resolver: yupResolver(validation),
@@ -108,12 +109,13 @@ const CreateVideo = () => {
   const [visible, { toggle }] = useDisclosure(false);
 
   const onSubmit = async (data: FormValues) => {
-    const { title, url, home } = data;
+    const { title, url, home, securityLevel } = data;
     fetcher.submit(
       {
         title,
         url,
         home,
+        securityLevel,
       },
       {
         method: "post",
@@ -141,8 +143,6 @@ const CreateVideo = () => {
       });
     }
   }, [fetcher?.data]);
-
-  console.log(watch("home"));
 
   return (
     <Box maw={"100%"} pos="relative">
@@ -174,6 +174,16 @@ const CreateVideo = () => {
                   placeholder="Pick one area"
                   data={options}
                   onChange={(value) => setValue("home", value as string)}
+                />
+
+                <Select
+                  label="Security Level"
+                  placeholder="Pick level"
+                  required
+                  data={warningOptions}
+                  onChange={(value) =>
+                    setValue("securityLevel", value as WarningLevel)
+                  }
                 />
 
                 {watch("url") ? (

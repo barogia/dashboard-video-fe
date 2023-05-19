@@ -339,7 +339,7 @@ const WarningDetailCreate = () => {
 
 export default WarningDetailCreate;
 
-const warningOptions = [
+export const warningOptions = [
   {
     value: WarningLevel.LOW as string,
     label: WarningLevel.LOW as string,

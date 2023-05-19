@@ -27,3 +27,8 @@ export const getAllUsers = async (limit: number = 10, offset: number = 0) => {
   const data = fetchAPI(`authen/all?limit=${limit}&offset=${offset}`, "GET");
   return data;
 };
+
+export const getUserByToken = async (token: string) => {
+  const data = await fetchAPI(`authen/userWithToken`, "GET", token);
+  return data;
+};
