@@ -1,5 +1,5 @@
 import { Box, Button, Table, Text } from "@mantine/core";
-import { deleteVideo, getAllVideos } from "~/api/video";
+import { getAllVideos } from "~/api/video";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";

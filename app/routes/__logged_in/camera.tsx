@@ -8,7 +8,7 @@ import { DeleteButton } from "~/design-components/button/DeleteButton";
 import { useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { getUserToken } from "~/utils/cookie";
-import { getUser, getUserByToken } from "~/api/user";
+import { getUserByToken } from "~/api/user";
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const searchParams = new URL(request.url).searchParams;

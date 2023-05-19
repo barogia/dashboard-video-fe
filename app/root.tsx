@@ -3,7 +3,6 @@ import { withEmotionCache } from "@emotion/react";
 import { Box, createEmotionCache, MantineProvider } from "@mantine/core";
 import { StylesPlaceholder } from "@mantine/remix";
 import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -11,7 +10,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from "@remix-run/react";
 import { useContext, useEffect } from "react";
 import { ClientStyleContext, ServerStyleContext } from "./context";
@@ -19,8 +17,6 @@ import { ErrorBoundaryComponent } from "./design-components/errors-catch";
 import NavigationToast from "./design-components/navigation-toast";
 import BrowserOnly from "./global-components/BrowserOnly";
 import GeneralLayout from "./layout/GeneralLayout";
-import { parseJwt } from "./utils/auth/jwt";
-import { getCookieByName, getUserSession } from "./utils/cookie";
 
 createEmotionCache({ key: "mantine" });
 

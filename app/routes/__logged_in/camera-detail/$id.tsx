@@ -1,10 +1,9 @@
-import { Box, LoadingOverlay, Skeleton, Title } from "@mantine/core";
+import { Box, LoadingOverlay, Title } from "@mantine/core";
 import type { LoaderArgs } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import ReactPlayer from "react-player";
 import { getVideo } from "~/api/video";
-import { Button, Center, Modal, Text } from "@mantine/core";
-import { useState } from "react";
+import { Button } from "@mantine/core";
 import { getUserToken } from "~/utils/cookie";
 import { getProfile } from "~/api/user";
 

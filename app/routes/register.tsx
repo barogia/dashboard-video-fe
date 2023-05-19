@@ -9,10 +9,10 @@ import {
   Box,
   Anchor,
 } from "@mantine/core";
-import { createUserSession, getUserToken } from "~/utils/cookie";
+import { getUserToken } from "~/utils/cookie";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { loginAPI, registerAPI } from "~/api/auth";
+import { registerAPI } from "~/api/auth";
 import { useCatch, useFetcher, useNavigate } from "@remix-run/react";
 import BrowserOnly from "~/global-components/BrowserOnly";
 import { color } from "~/config/color";

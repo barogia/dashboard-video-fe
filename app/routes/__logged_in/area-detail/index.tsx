@@ -4,10 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { useForm } from "react-hook-form";
 import { useToast } from "@chakra-ui/react";
-import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
+import { useFetcher, useNavigate } from "@remix-run/react";
 import { useEffect } from "react";
-import { createVideo, getVideo, updateVideo } from "~/api/video";
-import ReactPlayer from "react-player";
 import { getUserToken } from "~/utils/cookie";
 import { createHome } from "~/api/home";
 

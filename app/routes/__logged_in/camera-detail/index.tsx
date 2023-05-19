@@ -10,14 +10,13 @@ import {
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useToast } from "@chakra-ui/react";
 import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import { useEffect, useMemo } from "react";
-import { createVideo, getVideo, updateVideo } from "~/api/video";
+import { createVideo } from "~/api/video";
 import ReactPlayer from "react-player";
 import { getUserToken } from "~/utils/cookie";
-import FormSelect from "~/design-components/select/FormSelect";
 import { getAllHomes } from "~/api/home";
 import { useDisclosure } from "@mantine/hooks";
 import { warningOptions } from "../warning-detail";

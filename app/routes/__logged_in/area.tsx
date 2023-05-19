@@ -1,19 +1,12 @@
-import { Box, Button, Table, Text } from "@mantine/core";
-import ReactPlayer from "react-player";
-import { deleteVideo, getAllVideos } from "~/api/video";
+import { Box, Button, Table } from "@mantine/core";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import {
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-} from "@remix-run/react";
+import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import Pagination from "~/design-components/Pagination";
 import { DeleteButton } from "~/design-components/button/DeleteButton";
-import { Toast, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { deleteHome, getAllHomes } from "~/api/home";
+import { useToast } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { getAllHomes } from "~/api/home";
 import { deleteWarning } from "~/api/warning";
 
 export const loader = async ({ request, params }: LoaderArgs) => {

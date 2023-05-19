@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react";
 import { Box, Table } from "@mantine/core";
 import type { LoaderArgs } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
